@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: atlas-support-bot
+    env: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      # Required env vars to set in Render dashboard or via blueprint
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: AI_PROVIDER
+        value: groq
+      - key: GROQ_API_KEY
+        sync: false
+      - key: ATLAS_ALLOW_ALL
+        value: "true"
+      - key: ATLAS_SITE_URL
+        value: https://atlassignals.site
+      # Optional
+      - key: ATLAS_KB_PATH
+        value: kb
+      - key: ATLAS_KB_MAX_CHARS
+        value: "80000"
+      - key: AI_MODEL
+        value: llama-3.1-70b-versatile
+      - key: GROQ_FALLBACK_MODEL
+        value: llama-3.1-8b-instant
+      - key: AI_TEMPERATURE
+        value: "0.2"
+      - key: AI_MAX_TOKENS
+        value: "512"
+      - key: ADMIN_GROUP_ID
+        sync: false
+      - key: ATLAS_ADMIN_IDS
+        sync: false
+      - key: RATE_LIMIT_PER_MIN
+        value: "12"
+      - key: FAQ_CACHE_MAX
+        value: "200" 
