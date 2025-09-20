@@ -25,7 +25,7 @@ services:
       - key: ATLAS_KB_MAX_CHARS
         value: "80000"
       - key: AI_MODEL
-        value: llama-3.1-70b-versatile
+        value: llama-3.3-70b-versatile
       - key: GROQ_FALLBACK_MODEL
         value: llama-3.1-8b-instant
       - key: AI_TEMPERATURE
