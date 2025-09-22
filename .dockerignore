@@ -1,0 +1,44 @@
+# Git
+.git
+.gitignore
+
+# Environnements
+.env
+.env.*
+.venv
+venv
+ENV
+
+# Python
+__pycache__
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+*.so
+
+# Build/Dist
+build
+.dist
+.eggs
+dist
+*.egg-info
+
+# IDE/OS
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+
+# Cache/Test
+.cache
+.pytest_cache
+.tox
+.nox
+htmlcov
+
+# Autres
+logs
+*.log
+site
+node_modules 
