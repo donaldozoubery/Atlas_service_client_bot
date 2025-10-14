@@ -1,78 +1,331 @@
-# Service Client Bot Atlas (Telegram + IA)
+# 🤖 Atlas Service Client Bot
 
-## Prérequis
-- Python 3.10+
-- Compte Telegram (créer un bot via @BotFather)
-- Clé d'API pour votre fournisseur IA (OpenAI, OpenRouter, Groq) — ou utilisez Ollama en local (gratuit)
+<div align="center">
 
-## Installation
+![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)
+![Telegram](https://img.shields.io/badge/Telegram-Bot-2CA5E0.svg)
+![AI](https://img.shields.io/badge/AI-OpenAI%20%7C%20Groq%20%7C%20OpenRouter-green.svg)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+
+**Bot de support client intelligent pour Atlas Signals avec IA intégrée**
+
+[🚀 Déploiement](#-déploiement) • [⚙️ Configuration](#️-configuration) • [📚 Documentation](#-documentation) • [🛠️ Support](#️-support)
+
+</div>
+
+---
+
+## 📋 Vue d'ensemble
+
+**Atlas Service Client Bot** est un bot Telegram sophistiqué qui fournit un support client intelligent 24/7 pour Atlas Signals. Il utilise l'intelligence artificielle pour répondre automatiquement aux questions des utilisateurs, gérer les tickets de support, et fournir une assistance personnalisée.
+
+### ✨ Fonctionnalités Principales
+
+- 🤖 **Support IA Intelligent** - Réponses automatiques avec OpenAI, Groq, OpenRouter ou Ollama
+- 🎫 **Système de Tickets** - Gestion complète des demandes de support
+- 📚 **Base de Connaissances** - Apprentissage automatique depuis les documents métier
+- 🔒 **Sécurité Avancée** - Contrôle d'accès et rate limiting
+- 📊 **Analytics** - Suivi des performances et satisfaction client
+- 🌍 **Multi-langue** - Support français avec détection automatique
+- ⚡ **Haute Performance** - Cache intelligent et optimisations
+
+---
+
+## 🚀 Déploiement
+
+### Option 1: VPS (Recommandé)
+
+#### Prérequis
+- VPS Ubuntu 20.04+ ou Debian 11+
+- Python 3.11+
+- Git
+- Accès root ou sudo
+
+#### Installation Automatique
+
 ```bash
-python -m venv .venv
-. .venv/Scripts/Activate.ps1  # Windows PowerShell
-pip install -r requirements.txt
+# Cloner le repository
+git clone https://github.com/votre-username/Atlas_service_client_bot.git
+cd Atlas_service_client_bot
+
+# Exécuter le script d'installation
+chmod +x deploy.sh
+sudo ./deploy.sh
 ```
 
-## Configuration
-1. Créez un fichier `.env` à la racine avec:
-   - `TELEGRAM_BOT_TOKEN`
-   - `ATLAS_ALLOW_ALL` (optionnel) — si `true`, tout le monde peut utiliser le bot
-   - `ATLAS_MEMBER_IDS` (requis si `ATLAS_ALLOW_ALL` n'est pas activé)
-   - `ATLAS_ADMIN_IDS` (optionnel, CSV d'IDs autorisés à /reloadkb)
-   - `ATLAS_KB_PATH` (optionnel, chemin vers un dossier ou fichier `.md/.txt`)
-   - `ATLAS_KB_MAX_CHARS` (optionnel, limite de caractères chargés, défaut `100000`)
-   - `AI_PROVIDER` (options: `openai` [défaut], `openrouter`, `ollama`, `groq`)
-   - `AI_MODEL` (optionnel)
-   - `AI_TEMPERATURE` (optionnel, défaut `0.2` — plus bas = réponses plus précises)
-   - `AI_MAX_TOKENS` (optionnel, défaut `512` — longueur max de réponse)
-   - Si `AI_PROVIDER=openai`: `OPENAI_API_KEY`
-   - Si `AI_PROVIDER=openrouter`: `OPENROUTER_API_KEY` (+ optionnel `OPENROUTER_SITE_URL`, `OPENROUTER_APP_NAME`)
-   - Si `AI_PROVIDER=groq`: `GROQ_API_KEY`
+#### Installation Manuelle
 
-Exemple (Public + Groq + KB):
+```bash
+# 1. Mise à jour du système
+sudo apt update && sudo apt upgrade -y
+
+# 2. Installation de Python et dépendances
+sudo apt install python3.11 python3.11-venv python3-pip git -y
+
+# 3. Cloner le repository
+git clone https://github.com/votre-username/Atlas_service_client_bot.git
+cd Atlas_service_client_bot
+
+# 4. Créer l'environnement virtuel
+python3.11 -m venv venv
+source venv/bin/activate
+
+# 5. Installer les dépendances
+pip install -r requirements.txt
+
+# 6. Configurer les variables d'environnement
+cp .env.example .env
+nano .env  # Éditer avec vos valeurs
+
+# 7. Créer le service systemd
+sudo cp atlas-bot.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable atlas-bot
+sudo systemctl start atlas-bot
+
+# 8. Vérifier le statut
+sudo systemctl status atlas-bot
+```
+
+### Option 2: Docker
+
+```bash
+# Construire l'image
+docker build -t atlas-bot .
+
+# Lancer le conteneur
+docker run -d \
+  --name atlas-bot \
+  --env-file .env \
+  --restart unless-stopped \
+  atlas-bot
+```
+
+### Option 3: Cloud (Fly.io, Railway, Render)
+
+Voir les fichiers de configuration :
+- `fly.toml` - Configuration Fly.io
+- `railway.json` - Configuration Railway  
+- `render.yaml` - Configuration Render
+
+---
+
+## ⚙️ Configuration
+
+### Variables d'Environnement
+
+Créez un fichier `.env` basé sur `.env.example` :
+
 ```env
-TELEGRAM_BOT_TOKEN=123456:ABC...
-ATLAS_ALLOW_ALL=true
-ATLAS_ADMIN_IDS=123456789
-ATLAS_KB_PATH=kb
-ATLAS_KB_MAX_CHARS=80000
-AI_PROVIDER=groq
-GROQ_API_KEY=groq-...
+# ===== OBLIGATOIRE =====
+TELEGRAM_BOT_TOKEN=1234567890:ABCdefGHIjklMNOpqrsTUVwxyz
+
+# ===== CONFIGURATION IA =====
+AI_PROVIDER=groq  # openai, openrouter, groq, ollama
 AI_MODEL=llama-3.1-70b-versatile
 AI_TEMPERATURE=0.2
 AI_MAX_TOKENS=512
+
+# Clés API selon le fournisseur
+GROQ_API_KEY=gsk_...
+# OU
+OPENAI_API_KEY=sk-...
+# OU
+OPENROUTER_API_KEY=sk-or-...
+
+# ===== ACCÈS AU BOT =====
+ATLAS_ALLOW_ALL=true
+ATLAS_MEMBER_IDS=123456789,987654321
+ATLAS_ADMIN_IDS=123456789
+
+# ===== BASE DE CONNAISSANCES =====
+ATLAS_KB_PATH=kb
+ATLAS_KB_MAX_CHARS=80000
+
+# ===== CONFIGURATION SUPPORT =====
+ADMIN_GROUP_ID=-1001234567890
+
+# ===== LIMITES =====
+RATE_LIMIT_PER_MIN=12
+FAQ_CACHE_MAX=200
+
+# ===== SITE WEB =====
+ATLAS_SITE_URL=https://atlassignals.site
 ```
 
-Placez vos documents métier dans un dossier `kb/` (fichiers `.md` ou `.txt`). Ils seront résumés et injectés au prompt.
+### Base de Connaissances
 
-## Lancement
+Placez vos documents métier dans le dossier `kb/` :
+- Fichiers `.md` ou `.txt`
+- Le bot apprendra automatiquement le contenu
+- Limite configurable via `ATLAS_KB_MAX_CHARS`
+
+---
+
+## 📚 Documentation
+
+### Commandes Utilisateur
+
+| Commande | Description |
+|----------|-------------|
+| `/start` | Message d'accueil et instructions |
+| `/help` | Liste des commandes disponibles |
+| `/ask <question>` | Poser une question à l'IA |
+| `/id` | Afficher votre ID Telegram |
+| `/support` | Créer un ticket de support |
+
+### Commandes Admin
+
+| Commande | Description |
+|----------|-------------|
+| `/reloadkb` | Recharger la base de connaissances |
+| `/tickets` | Lister les tickets récents |
+| `/ticket <id>` | Détails d'un ticket |
+| `/close <id>` | Fermer un ticket |
+| `/assign <id> <admin>` | Assigner un ticket |
+
+### API Endpoints
+
+- `GET /healthz` - Statut du service (JSON)
+
+---
+
+## 🛠️ Support
+
+### Logs et Monitoring
+
 ```bash
+# Voir les logs en temps réel
+sudo journalctl -u atlas-bot -f
+
+# Vérifier le statut
+sudo systemctl status atlas-bot
+
+# Redémarrer le service
+sudo systemctl restart atlas-bot
+```
+
+### Dépannage
+
+1. **Bot ne répond pas**
+   - Vérifiez `TELEGRAM_BOT_TOKEN`
+   - Consultez les logs : `sudo journalctl -u atlas-bot`
+
+2. **Erreurs IA**
+   - Vérifiez les clés API
+   - Testez avec `AI_PROVIDER=ollama` (local)
+
+3. **Problèmes de permissions**
+   - Vérifiez `ATLAS_MEMBER_IDS` et `ATLAS_ADMIN_IDS`
+   - Activez `ATLAS_ALLOW_ALL=true` pour tester
+
+### Mise à Jour
+
+```bash
+# Arrêter le service
+sudo systemctl stop atlas-bot
+
+# Mettre à jour le code
+git pull origin main
+
+# Redémarrer
+sudo systemctl start atlas-bot
+```
+
+---
+
+## 🏗️ Architecture
+
+```
+Atlas Service Client Bot
+├── main.py                 # Bot principal
+├── kb/                     # Base de connaissances
+│   ├── atlas_business.md   # Contexte métier
+│   └── DOCUMENTATION_*.md  # Documentation complète
+├── requirements.txt        # Dépendances Python
+├── .env.example           # Variables d'environnement
+├── Dockerfile             # Configuration Docker
+├── fly.toml              # Configuration Fly.io
+├── railway.json          # Configuration Railway
+├── render.yaml           # Configuration Render
+└── deploy.sh             # Script de déploiement VPS
+```
+
+---
+
+## 🔧 Développement
+
+### Installation Locale
+
+```bash
+# Cloner et installer
+git clone https://github.com/votre-username/Atlas_service_client_bot.git
+cd Atlas_service_client_bot
+python3.11 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Configurer
+cp .env.example .env
+# Éditer .env avec vos valeurs
+
+# Lancer
 python main.py
 ```
 
-## Déploiement sur Render
-- Le service est configuré comme `web` avec un endpoint `/healthz`.
-- Étapes:
-  1. Poussez ce repo sur GitHub.
-  2. Sur Render, “New +” → “Blueprint” → repo avec `render.yaml`.
-  3. Renseignez les variables d’environnement (`TELEGRAM_BOT_TOKEN`, `AI_PROVIDER`, `GROQ_API_KEY`, `ATLAS_ADMIN_IDS`, etc.).
-  4. Déployez. Render pingera `/healthz` (200 OK) pour veiller et redémarrer si besoin.
-- 24/7: sur plans payants, le service reste actif en continu. Sur free, Render peut stopper l’instance; préférez Starter pour disponibilité constante.
+### Tests
 
-## Endpoints
-- `/healthz`: JSON `{ status, uptime_s, tickets_open, faq_cache }`.
+```bash
+# Tests unitaires (à implémenter)
+python -m pytest tests/
 
-## Utilisation
-- `/start` et `/help`: informations d'accueil
-- Envoyez un message privé au bot; il répondra avec l'IA
-- `/ask <question>`: poser une question explicite
-- `/id`: afficher votre ID Telegram
-- `/reloadkb`: recharger la base de connaissances (admins uniquement)
+# Test de l'API
+curl http://localhost:8000/healthz
+```
 
-## Améliorer la précision des réponses
-- Baissez `AI_TEMPERATURE` (ex. `0.1`) pour des réponses plus directes.
-- Ajoutez vos procédures, FAQ et politiques dans `kb/` (format `.md/.txt`).
-- Le bot suit un format: reformulation du problème, 2-5 étapes, puis alternatives.
+---
 
-## Sécurité
-- En mode public (`ATLAS_ALLOW_ALL=true`), tout le monde peut accéder au bot. Ajoutez des limites (rate-limit) ou surveillez vos coûts API.
-- Le bot refuse l'accès aux utilisateurs dont l'ID n'est pas listé dans `ATLAS_MEMBER_IDS` si le mode public n'est pas activé. 
+## 📈 Roadmap
+
+- [ ] Interface web d'administration
+- [ ] Analytics avancés
+- [ ] Support multi-langue
+- [ ] Intégration CRM
+- [ ] Webhooks
+- [ ] API REST complète
+
+---
+
+## 📄 Licence
+
+Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+
+---
+
+## 🤝 Contribution
+
+Les contributions sont les bienvenues ! Merci de :
+
+1. Fork le projet
+2. Créer une branche (`git checkout -b feature/AmazingFeature`)
+3. Commit (`git commit -m 'Add some AmazingFeature'`)
+4. Push (`git push origin feature/AmazingFeature`)
+5. Ouvrir une Pull Request
+
+---
+
+## 📞 Contact
+
+- **Site Web** : [atlassignals.site](https://atlassignals.site)
+- **Email** : serviceclient@atlassignals.site
+- **Support** : Via le bot Telegram
+
+---
+
+<div align="center">
+
+**Fait avec ❤️ pour Atlas Signals**
+
+*Dernière mise à jour : Décembre 2024*
+
+</div>
